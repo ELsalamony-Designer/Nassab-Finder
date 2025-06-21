@@ -56,7 +56,7 @@
       color: var(--text-color);
     }
 
-    input, select, textarea {
+    input[type="text"], input[type="url"], input[type="file"], select, textarea {
       display: block;
       width: calc(100% - 20px); /* Account for padding */
       padding: 12px 10px;
@@ -67,7 +67,7 @@
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    input:focus, select:focus, textarea:focus {
+    input[type="text"]:focus, input[type="url"]:focus, input[type="file"]:focus, select:focus, textarea:focus {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
       outline: none;
@@ -158,10 +158,8 @@
     <label for="contactInfo">Phone Number or Link:</label>
     <input type="text" id="contactInfo" name="contact" placeholder="E.g., '+1234567890' or 'facebook.com/scammerpage'" required />
 
-    <label for="imageUrl">Image URL (optional):</label>
-    <input type="url" id="imageUrl" name="image" placeholder="Paste image link here (e.g., screenshot of chat)" />
-
-    <label for="scamType">Scam Type:</label>
+    <label for="imageUpload">Upload Evidence Image (optional):</label>
+    <input type="file" id="imageUpload" name="imageFile" accept="image/*" /> <label for="scamType">Scam Type:</label>
     <select id="scamType" name="type" required>
       <option value="">-- Select Scam Type --</option>
       <option value="Robux Scam">Robux Scam</option>
@@ -175,7 +173,7 @@
     <label for="description">Describe what happened:</label>
     <textarea id="description" name="desc" placeholder="Provide details: how, when, what was lost, any unique identifiers..." required></textarea>
 
-    <button type="submit">Submit Report</button>
+    <button type="submit" id="submitButton">Submit Report</button>
   </form>
 
   <div class="search">
@@ -188,67 +186,109 @@
   </div>
 
   <script type="module">
+    // Firebase Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+    // Firebase Storage Imports
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 
+    // Your Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDaC43wI6NyizEzJUbH4Uw-dVTUKYJZsR4",
       authDomain: "report-scams-294a4.firebaseapp.com",
       databaseURL: "https://report-scams-294a4-default-rtdb.firebaseio.com",
       projectId: "report-scams-294a4",
-      storageBucket: "report-scams-294a4.firebasestorage.app",
+      storageBucket: "report-scams-294a4.firebasestorage.app", // تأكد من وجود هذا
       messagingSenderId: "756304414184",
       appId: "1:756304414184:web:55eadd3ba172e57146d05d",
       measurementId: "G-7C5TVCC1W7"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const storage = getStorage(app); // تهيئة Firebase Storage
 
+    // Get HTML Elements
     const form = document.getElementById('reportForm');
     const reportList = document.getElementById('reportList');
     const searchInput = document.getElementById('searchInput');
+    const imageUploadInput = document.getElementById('imageUpload'); // الحصول على حقل إدخال الملف
+    const submitButton = document.getElementById('submitButton');
 
-    form.addEventListener('submit', function(e) {
+    // Handle Form Submission
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
-      const report = {
-        name: form.name.value.trim(), // Trim whitespace
-        contact: form.contact.value.trim(),
-        image: form.image.value.trim(),
-        type: form.type.value,
-        desc: form.desc.value.trim(),
-        date: new Date().toLocaleString()
-      };
 
-      // Basic validation to prevent empty reports if inputs are just spaces
-      if (!report.name || !report.contact || !report.type || !report.desc) {
+      // Disable button and show loading state
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+
+      const scammerName = form.name.value.trim();
+      const contactInfo = form.contact.value.trim();
+      const scamType = form.type.value;
+      const description = form.desc.value.trim();
+      const imageFile = imageUploadInput.files[0]; // الحصول على الملف المختار
+
+      // Basic validation
+      if (!scammerName || !contactInfo || !scamType || !description) {
           alert("Please fill in all required fields (Name/Page, Phone/Link, Scam Type, Description).");
+          submitButton.disabled = false;
+          submitButton.textContent = 'Submit Report';
           return;
       }
 
-      push(ref(db, 'scammerReports'), report)
-        .then(() => {
-          alert("Report submitted successfully! Thank you for helping keep others safe.");
-          form.reset();
-        })
-        .catch((error) => {
-          console.error("Error submitting report:", error);
-          alert("There was an error submitting your report. Please try again later.");
-        });
+      let imageUrl = ''; // لـتخزين رابط الصورة بعد الرفع
+
+      try {
+        if (imageFile) {
+          // Create a unique file name for the image
+          const fileName = `${Date.now()}_${imageFile.name}`;
+          const storageReference = storageRef(storage, `scammer_evidence/${fileName}`); // مسار التخزين
+
+          // Upload the image file
+          const uploadResult = await uploadBytes(storageReference, imageFile);
+          imageUrl = await getDownloadURL(uploadResult.ref); // الحصول على رابط التحميل
+        }
+
+        // Create the report object with the image URL
+        const report = {
+          name: scammerName,
+          contact: contactInfo,
+          image: imageUrl, // الآن يحتوي على الرابط أو سلسلة فارغة
+          type: scamType,
+          desc: description,
+          date: new Date().toLocaleString()
+        };
+
+        // Push report to Realtime Database
+        await push(ref(db, 'scammerReports'), report);
+
+        alert("Report submitted successfully! Thank you for helping keep others safe.");
+        form.reset(); // Clear the form
+        imageUploadInput.value = ''; // Clear file input manually
+
+      } catch (error) {
+        console.error("Error submitting report:", error);
+        alert("There was an error submitting your report. Please try again later. Error: " + error.message);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Report';
+      }
     });
 
+    // Function to display reports (remains largely the same)
     function displayReports(filter = '') {
       const reportsRef = ref(db, 'scammerReports');
       onValue(reportsRef, (snapshot) => {
-        reportList.innerHTML = ''; // Clear existing reports
+        reportList.innerHTML = '';
         const data = snapshot.val();
         if (data) {
-          const keys = Object.keys(data).reverse(); // Display newest reports first
+          const keys = Object.keys(data).reverse();
           let hasFilteredReports = false;
 
           keys.forEach(key => {
             const r = data[key];
-            // Case-insensitive search
             if (!filter || r.contact.toLowerCase().includes(filter.toLowerCase())) {
               hasFilteredReports = true;
               reportList.innerHTML += `
@@ -278,7 +318,6 @@
       displayReports(searchInput.value.trim());
     });
 
-    // Initial display of reports when the page loads
     displayReports();
   </script>
 </body>
