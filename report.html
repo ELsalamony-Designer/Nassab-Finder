@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Report</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Submit a Scammer Report</h1>
+
+  <form id="reportForm">
+    <input type="text" name="name" placeholder="Scammer Name or Page" required />
+    <input type="text" name="contact" placeholder="Phone Number or Link" required />
+    
+    <select name="type" required>
+      <option value="">-- Scam Type --</option>
+      <option value="Robux Scam">Robux Scam</option>
+      <option value="Online Product Fraud">Online Product Fraud</option>
+      <option value="WhatsApp Scam">WhatsApp Scam</option>
+    </select>
+
+    <select name="location" required>
+      <option value="">-- Location (City) --</option>
+      <option value="Cairo">Cairo</option>
+      <option value="Giza">Giza</option>
+      <option value="Alexandria">Alexandria</option>
+      <option value="Mansoura">Mansoura</option>
+      <option value="Tanta">Tanta</option>
+      <!-- Add more cities -->
+    </select>
+
+    <textarea name="desc" placeholder="Describe what happened" rows="5"></textarea>
+    <button type="submit">Submit Report</button>
+  </form>
+
+  <a href="index.html">← Back to Home</a>
+
+  <script src="script.js"></script>
+</body>
+</html>
