@@ -6,7 +6,6 @@
   <title>Report a Scammer</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* CSS Variables for easy theme customization */
     :root {
       --primary-color: #007bff;
       --primary-hover-color: #0056b3;
@@ -15,7 +14,6 @@
       --text-color: #333;
       --border-color: #ddd;
       --shadow-light: rgba(0,0,0,0.08);
-      --shadow-medium: rgba(0,0,0,0.15);
     }
 
     body {
@@ -24,20 +22,16 @@
       padding: 20px;
       background-color: var(--background-color);
       color: var(--text-color);
-      line-height: 1.6;
     }
 
     h1 {
       text-align: center;
       color: var(--primary-color);
       margin-bottom: 30px;
-      font-size: 2.2em;
-      font-weight: 700;
     }
 
-    /* Common styling for form, reports, and search sections */
-    form, .reports, .search {
-      background-color: var(--card-background);
+    form, .search, .reports {
+      background: var(--card-background);
       padding: 25px;
       border-radius: 10px;
       box-shadow: 0 4px 15px var(--shadow-light);
@@ -46,119 +40,50 @@
       border: 1px solid var(--border-color);
     }
 
-    .search {
-      margin-top: 30px; /* Space above search bar */
-    }
-
     label {
-      display: block;
-      margin-bottom: 8px;
       font-weight: 600;
-      color: var(--text-color);
+      display: block;
+      margin: 15px 0 5px;
     }
 
-    /* Styling for all input types, select, and textarea */
-    input[type="text"],
-    input[type="url"],
-    input[type="file"],
-    select,
-    textarea {
-      display: block;
-      width: calc(100% - 20px); /* Full width minus padding */
-      padding: 12px 10px;
-      margin-bottom: 15px; /* Spacing between fields */
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
       border: 1px solid var(--border-color);
       border-radius: 6px;
       font-size: 1em;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    /* Focus states for input fields */
-    input[type="text"]:focus,
-    input[type="url"]:focus,
-    input[type="file"]:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-      outline: none;
-    }
-
-    textarea {
-      resize: vertical; /* Allow vertical resizing only */
-      min-height: 100px;
     }
 
     button {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: 6px;
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: bold;
       cursor: pointer;
-      font-size: 1.1em;
-      font-weight: 600;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 20px;
     }
 
-    button:hover:not(:disabled) { /* Hover effect only when not disabled */
-      background-color: var(--primary-hover-color);
-      transform: translateY(-2px);
+    button:hover {
+      background: var(--primary-hover-color);
     }
 
-    button:disabled { /* Styling for disabled button */
-      background-color: #cccccc;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Styling for individual report items */
     .report-item {
       padding: 15px 0;
       border-bottom: 1px dashed var(--border-color);
     }
 
-    .report-item:last-child {
-      border-bottom: none; /* No border for the last item */
-    }
-
-    .report-item strong {
-      color: var(--primary-color);
-      font-size: 1.1em;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .report-meta {
-      font-size: 0.9em;
-      color: #666;
-      margin-bottom: 10px;
-    }
-
-    .report-meta span {
-      margin-right: 15px; /* Spacing between meta info */
-    }
-
     img {
       max-width: 100%;
-      height: auto;
       border-radius: 8px;
-      margin: 15px 0;
-      box-shadow: 0 2px 8px var(--shadow-light);
-      display: block;
+      margin: 10px 0;
     }
 
     em {
+      color: #555;
       display: block;
       margin-top: 10px;
-      font-style: normal; /* Override default italic for description */
-      color: #555;
     }
 
-    /* Message for no reports found */
     .no-reports {
       text-align: center;
       color: #777;
@@ -172,10 +97,10 @@
 
   <form id="reportForm">
     <label for="scammerName">Scammer Name or Page:</label>
-    <input type="text" id="scammerName" name="name" placeholder="E.g., 'Fake Robux Seller' or 'Scam Page Name'" required />
+    <input type="text" id="scammerName" name="name" required />
 
     <label for="contactInfo">Phone Number or Link:</label>
-    <input type="text" id="contactInfo" name="contact" placeholder="E.g., '+1234567890' or 'facebook.com/scammerpage'" required />
+    <input type="text" id="contactInfo" name="contact" required />
 
     <label for="imageUpload">Upload Evidence Image (optional):</label>
     <input type="file" id="imageUpload" name="imageFile" accept="image/*" />
@@ -186,20 +111,18 @@
       <option value="Robux Scam">Robux Scam</option>
       <option value="Product Fraud">Product Fraud</option>
       <option value="WhatsApp Scam">WhatsApp Scam</option>
-      <option value="Investment Scam">Investment Scam</option>
-      <option value="Phishing">Phishing</option>
-      <option value="Other">Other (please describe below)</option>
+      <option value="Other">Other</option>
     </select>
 
     <label for="description">Describe what happened:</label>
-    <textarea id="description" name="desc" placeholder="Provide details: how, when, what was lost, any unique identifiers..." required></textarea>
+    <textarea id="description" name="desc" required></textarea>
 
     <button type="submit" id="submitButton">Submit Report</button>
   </form>
 
   <div class="search">
-    <label for="searchInput">Search Reports by Phone Number/Link:</label>
-    <input type="text" id="searchInput" placeholder="E.g., '+12345' or 'facebook.com/...' ">
+    <label for="searchInput">Search Reports by Contact:</label>
+    <input type="text" id="searchInput" placeholder="e.g. +201234... or facebook.com/...">
   </div>
 
   <div class="reports" id="reportList">
@@ -207,40 +130,33 @@
   </div>
 
   <script type="module">
-    // --- Firebase Imports ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 
-    // --- Your Firebase Configuration ---
     const firebaseConfig = {
       apiKey: "AIzaSyDaC43wI6NyizEzJUbH4Uw-dVTUKYJZsR4",
       authDomain: "report-scams-294a4.firebaseapp.com",
       databaseURL: "https://report-scams-294a4-default-rtdb.firebaseio.com",
       projectId: "report-scams-294a4",
-      storageBucket: "report-scams-294a4.firebasestorage.app", // Make sure this is correct for your project!
+      storageBucket: "report-scams-294a4.appspot.com", // ✅ صح
       messagingSenderId: "756304414184",
       appId: "1:756304414184:web:55eadd3ba172e57146d05d",
       measurementId: "G-7C5TVCC1W7"
     };
 
-    // --- Initialize Firebase Services ---
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const storage = getStorage(app);
 
-    // --- Get HTML Elements ---
     const form = document.getElementById('reportForm');
     const reportList = document.getElementById('reportList');
     const searchInput = document.getElementById('searchInput');
     const imageUploadInput = document.getElementById('imageUpload');
     const submitButton = document.getElementById('submitButton');
 
-    // --- Handle Form Submission ---
     form.addEventListener('submit', async function(e) {
-      e.preventDefault(); // Prevent default form submission
-
-      // Disable button and show loading state
+      e.preventDefault();
       submitButton.disabled = true;
       submitButton.textContent = 'Submitting...';
 
@@ -248,84 +164,64 @@
       const contactInfo = form.contact.value.trim();
       const scamType = form.type.value;
       const description = form.desc.value.trim();
-      const imageFile = imageUploadInput.files[0]; // Get the selected file
+      const imageFile = imageUploadInput.files[0];
 
-      // Basic client-side validation
       if (!scammerName || !contactInfo || !scamType || !description) {
-          alert("Please fill in all required fields (Name/Page, Phone/Link, Scam Type, Description).");
-          submitButton.disabled = false;
-          submitButton.textContent = 'Submit Report';
-          return; // Stop function execution
+        alert("Please fill in all required fields.");
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Report';
+        return;
       }
 
-      let imageUrl = ''; // Variable to store the downloadable URL of the image
-
+      let imageUrl = '';
       try {
         if (imageFile) {
-          // Create a unique file name for the image to avoid conflicts
           const fileName = `${Date.now()}_${imageFile.name}`;
-          // Define the storage path, e.g., 'scammer_evidence/1678888888_myimage.jpg'
-          const storageReference = storageRef(storage, `scammer_evidence/${fileName}`);
-
-          // Upload the image file to Firebase Storage
-          const uploadResult = await uploadBytes(storageReference, imageFile);
-          // Get the public downloadable URL of the uploaded image
+          const storagePath = storageRef(storage, `scammer_evidence/${fileName}`);
+          const uploadResult = await uploadBytes(storagePath, imageFile);
           imageUrl = await getDownloadURL(uploadResult.ref);
         }
 
-        // Create the report object
         const report = {
           name: scammerName,
           contact: contactInfo,
-          image: imageUrl, // This will be the URL or an empty string if no image was uploaded
+          image: imageUrl,
           type: scamType,
           desc: description,
-          date: new Date().toLocaleString() // Current date and time
+          date: new Date().toLocaleString()
         };
 
-        // Push report to Firebase Realtime Database
         await push(ref(db, 'scammerReports'), report);
-
-        // Success message and form reset
-        alert("Report submitted successfully! Thank you for helping keep others safe.");
-        form.reset(); // Clear form fields
-        imageUploadInput.value = ''; // Manually clear the file input field
+        alert("Report submitted successfully!");
+        form.reset();
+        imageUploadInput.value = '';
 
       } catch (error) {
-        // Log and display error messages
-        console.error("Error submitting report:", error);
-        alert("There was an error submitting your report. Please try again later. Error: " + error.message);
+        console.error("Error:", error);
+        alert("Error submitting report: " + error.message);
       } finally {
-        // Re-enable button and reset its text regardless of success or failure
         submitButton.disabled = false;
         submitButton.textContent = 'Submit Report';
       }
     });
 
-    // --- Function to Display Reports ---
     function displayReports(filter = '') {
       const reportsRef = ref(db, 'scammerReports');
-      // Listen for changes in the database
       onValue(reportsRef, (snapshot) => {
-        reportList.innerHTML = ''; // Clear existing reports before re-rendering
-        const data = snapshot.val(); // Get data from snapshot
-
+        reportList.innerHTML = '';
+        const data = snapshot.val();
         if (data) {
-          const keys = Object.keys(data).reverse(); // Get keys and reverse to show newest first
-          let hasFilteredReports = false; // Flag to check if any reports match the filter
-
+          const keys = Object.keys(data).reverse();
+          let found = false;
           keys.forEach(key => {
             const r = data[key];
-            // Filter reports by contact information (case-insensitive)
             if (!filter || r.contact.toLowerCase().includes(filter.toLowerCase())) {
-              hasFilteredReports = true;
+              found = true;
               reportList.innerHTML += `
                 <div class="report-item">
                   <strong>${r.name}</strong>
-                  <div class="report-meta">
-                    <span>📍 ${r.contact}</span>
-                    <span>🗓️ ${r.date}</span>
-                    <span>Type: ${r.type}</span>
+                  <div>
+                    📍 ${r.contact} &nbsp;&nbsp; 🗓️ ${r.date} &nbsp;&nbsp; Type: ${r.type}
                   </div>
                   ${r.image ? `<img src="${r.image}" alt="Evidence" onerror="this.style.display='none'" />` : ''}
                   <em>${r.desc}</em>
@@ -333,24 +229,19 @@
               `;
             }
           });
-
-          // Show message if no reports match the filter
-          if (!hasFilteredReports) {
-            reportList.innerHTML = '<p class="no-reports">No reports found matching your search criteria.</p>';
+          if (!found) {
+            reportList.innerHTML = '<p class="no-reports">No reports found matching your search.</p>';
           }
         } else {
-          // Show message if no reports exist in the database
-          reportList.innerHTML = '<p class="no-reports">No reports submitted yet. Be the first to submit one!</p>';
+          reportList.innerHTML = '<p class="no-reports">No reports yet. Be the first to submit one!</p>';
         }
       });
     }
 
-    // --- Search Input Event Listener ---
     searchInput.addEventListener('input', () => {
-      displayReports(searchInput.value.trim()); // Update reports on search input
+      displayReports(searchInput.value.trim());
     });
 
-    // --- Initial Load: Display all reports when the page loads ---
     displayReports();
   </script>
 </body>
