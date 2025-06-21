@@ -4,15 +4,124 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Report Scammer</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    input, select, textarea, button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .reports {
+      max-width: 500px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Report Scammer</h1>
-  <a class="button" href="report.html">Submit a Report</a>
-  <h2>Latest Reports</h2>
-  <div id="reportsList"></div>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
-  <script src="script.js"></script>
+  <h1>Report a Scammer</h1>
+
+  <form id="reportForm">
+    <input type="text" name="name" placeholder="Scammer Name or Page" required />
+    <input type="text" name="contact" placeholder="Phone Number or Link" required />
+    <select name="type" required>
+      <option value="">-- Scam Type --</option>
+      <option value="Robux Scam">Robux Scam</option>
+      <option value="Product Fraud">Product Fraud</option>
+      <option value="WhatsApp Scam">WhatsApp Scam</option>
+    </select>
+    <textarea name="desc" placeholder="Describe what happened" required></textarea>
+    <button type="submit">Submit Report</button>
+  </form>
+
+  <div class="reports" id="reportList"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDaC43wI6NyizEzJUbH4Uw-dVTUKYJZsR4",
+      authDomain: "report-scams-294a4.firebaseapp.com",
+      databaseURL: "https://report-scams-294a4-default-rtdb.firebaseio.com",
+      projectId: "report-scams-294a4",
+      storageBucket: "report-scams-294a4.firebasestorage.app",
+      messagingSenderId: "756304414184",
+      appId: "1:756304414184:web:55eadd3ba172e57146d05d",
+      measurementId: "G-7C5TVCC1W7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const form = document.getElementById('reportForm');
+    const reportList = document.getElementById('reportList');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const report = {
+        name: form.name.value,
+        contact: form.contact.value,
+        type: form.type.value,
+        desc: form.desc.value,
+        date: new Date().toLocaleString()
+      };
+      push(ref(db, 'scammerReports'), report);
+      form.reset();
+      alert("Report submitted successfully!");
+    });
+
+    function displayReports() {
+      const reportsRef = ref(db, 'scammerReports');
+      onValue(reportsRef, (snapshot) => {
+        reportList.innerHTML = '';
+        const data = snapshot.val();
+        if (data) {
+          const keys = Object.keys(data).reverse();
+          keys.forEach(key => {
+            const r = data[key];
+            reportList.innerHTML += `
+              <div>
+                <strong>${r.name}</strong> (${r.type})<br>
+                📍 ${r.contact} 🗓️ ${r.date}<br>
+                <em>${r.desc}</em><hr>
+              </div>
+            `;
+          });
+        }
+      });
+    }
+
+    displayReports();
+  </script>
 </body>
 </html>
