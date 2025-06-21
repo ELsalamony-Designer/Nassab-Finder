@@ -3,148 +3,274 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Report Scammer</title>
+  <title>Report a Scammer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-color: #2b74ff;
+      --primary-hover: #1e5edb;
+      --bg-color: #f4f6f8;
+      --card-bg: #fff;
+      --text: #222;
+      --border: #ddd;
+      --shadow: rgba(0,0,0,0.08);
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
       padding: 20px;
-      background-color: #f4f4f4;
+      background: var(--bg-color);
+      color: var(--text);
     }
+
     h1 {
-      color: #333;
+      text-align: center;
+      color: var(--primary-color);
     }
-    form {
-      background-color: #fff;
+
+    form, .search, .reports {
+      background: var(--card-bg);
+      max-width: 550px;
+      margin: 25px auto;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 500px;
-      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px var(--shadow);
+      border: 1px solid var(--border);
     }
-    input, select, textarea, button {
+
+    label {
+      font-weight: bold;
+      margin-top: 10px;
       display: block;
+    }
+
+    input, select, textarea, button {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
+      margin-top: 6px;
       border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 1em;
     }
+
     button {
-      background-color: #007bff;
-      color: white;
+      background: var(--primary-color);
+      color: #fff;
       border: none;
+      margin-top: 15px;
+      font-weight: bold;
       cursor: pointer;
     }
+
     button:hover {
-      background-color: #0056b3;
+      background: var(--primary-hover);
     }
-    .reports {
-      max-width: 500px;
-      margin: 20px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .search {
-      max-width: 500px;
-      margin: 20px auto;
-    }
-    img {
+
+    #previewImage {
+      display: none;
       max-width: 100%;
+      margin-top: 10px;
       border-radius: 8px;
-      margin: 10px 0;
+      box-shadow: 0 0 6px var(--shadow);
+    }
+
+    .report-item {
+      padding: 15px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .report-item:last-child {
+      border-bottom: none;
+    }
+
+    .report-item strong {
+      color: var(--primary-color);
+      font-size: 1.1em;
+    }
+
+    .report-meta {
+      font-size: 0.9em;
+      color: #666;
+      margin: 5px 0;
+    }
+
+    .report-meta span {
+      margin-right: 10px;
+    }
+
+    em {
+      display: block;
+      margin-top: 8px;
+      color: #333;
+    }
+
+    .no-reports {
+      text-align: center;
+      font-style: italic;
+      color: #999;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Report a Scammer</h1>
 
-  <form id="reportForm">
-    <input type="text" name="name" placeholder="Scammer Name or Page" required />
-    <input type="text" name="contact" placeholder="Phone Number or Link" required />
-    <input type="text" name="image" placeholder="Image URL (optional)" />
-    <select name="type" required>
-      <option value="">-- Scam Type --</option>
-      <option value="Robux Scam">Robux Scam</option>
-      <option value="Product Fraud">Product Fraud</option>
-      <option value="WhatsApp Scam">WhatsApp Scam</option>
-    </select>
-    <textarea name="desc" placeholder="Describe what happened" required></textarea>
-    <button type="submit">Submit Report</button>
-  </form>
+<h1>Report a Scammer</h1>
 
-  <div class="search">
-    <input type="text" id="searchInput" placeholder="Search by phone number...">
-  </div>
+<form id="reportForm">
+  <label for="scammerName">Scammer Name or Page:</label>
+  <input type="text" id="scammerName" name="name" required />
 
-  <div class="reports" id="reportList"></div>
+  <label for="contactInfo">Phone Number or Link:</label>
+  <input type="text" id="contactInfo" name="contact" required />
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+  <label for="imageUpload">Upload Image (optional):</label>
+  <input type="file" id="imageUpload" accept="image/*" />
+  <img id="previewImage" alt="Preview" />
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDaC43wI6NyizEzJUbH4Uw-dVTUKYJZsR4",
-      authDomain: "report-scams-294a4.firebaseapp.com",
-      databaseURL: "https://report-scams-294a4-default-rtdb.firebaseio.com",
-      projectId: "report-scams-294a4",
-      storageBucket: "report-scams-294a4.firebasestorage.app",
-      messagingSenderId: "756304414184",
-      appId: "1:756304414184:web:55eadd3ba172e57146d05d",
-      measurementId: "G-7C5TVCC1W7"
-    };
+  <label for="scamType">Scam Type:</label>
+  <select id="scamType" name="type" required>
+    <option value="">-- Select Scam Type --</option>
+    <option value="Robux Scam">Robux Scam</option>
+    <option value="Product Fraud">Product Fraud</option>
+    <option value="WhatsApp Scam">WhatsApp Scam</option>
+    <option value="Other">Other</option>
+  </select>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  <label for="description">Description:</label>
+  <textarea id="description" name="desc" required></textarea>
 
-    const form = document.getElementById('reportForm');
-    const reportList = document.getElementById('reportList');
-    const searchInput = document.getElementById('searchInput');
+  <button type="submit" id="submitButton">Submit Report</button>
+</form>
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+<div class="search">
+  <label for="searchInput">Search by Contact Info:</label>
+  <input type="text" id="searchInput" placeholder="e.g. +201234567890 or URL">
+</div>
+
+<div class="reports" id="reportList">
+  <p class="no-reports">No reports yet.</p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDaC43wI6NyizEzJUbH4Uw-dVTUKYJZsR4",
+    authDomain: "report-scams-294a4.firebaseapp.com",
+    databaseURL: "https://report-scams-294a4-default-rtdb.firebaseio.com",
+    projectId: "report-scams-294a4",
+    storageBucket: "report-scams-294a4.appspot.com", // ✅ صح
+    messagingSenderId: "756304414184",
+    appId: "1:756304414184:web:55eadd3ba172e57146d05d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const storage = getStorage(app);
+
+  const form = document.getElementById('reportForm');
+  const reportList = document.getElementById('reportList');
+  const searchInput = document.getElementById('searchInput');
+  const imageUpload = document.getElementById('imageUpload');
+  const previewImage = document.getElementById('previewImage');
+  const submitButton = document.getElementById('submitButton');
+
+  imageUpload.addEventListener('change', () => {
+    const file = imageUpload.files[0];
+    if (file) {
+      previewImage.src = URL.createObjectURL(file);
+      previewImage.style.display = 'block';
+    } else {
+      previewImage.style.display = 'none';
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting...";
+
+    const name = form.name.value.trim();
+    const contact = form.contact.value.trim();
+    const type = form.type.value;
+    const desc = form.desc.value.trim();
+    const file = imageUpload.files[0];
+
+    let imageUrl = '';
+
+    try {
+      if (file) {
+        const filename = `${Date.now()}_${file.name}`;
+        const imageRef = storageRef(storage, 'scammer_images/' + filename);
+        const snapshot = await uploadBytes(imageRef, file);
+        imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
       const report = {
-        name: form.name.value,
-        contact: form.contact.value,
-        image: form.image.value,
-        type: form.type.value,
-        desc: form.desc.value,
+        name,
+        contact,
+        type,
+        desc,
+        image: imageUrl,
         date: new Date().toLocaleString()
       };
-      push(ref(db, 'scammerReports'), report);
-      form.reset();
+
+      await push(ref(db, 'scammerReports'), report);
       alert("Report submitted successfully!");
-    });
+      form.reset();
+      previewImage.style.display = 'none';
 
-    function displayReports(filter = '') {
-      const reportsRef = ref(db, 'scammerReports');
-      onValue(reportsRef, (snapshot) => {
-        reportList.innerHTML = '';
-        const data = snapshot.val();
-        if (data) {
-          const keys = Object.keys(data).reverse();
-          keys.forEach(key => {
-            const r = data[key];
-            if (!filter || r.contact.includes(filter)) {
-              reportList.innerHTML += `
-                <div>
-                  <strong>${r.name}</strong> (${r.type})<br>
-                  📍 ${r.contact} 🗓️ ${r.date}<br>
-                  ${r.image ? `<img src="${r.image}" alt="evidence" />` : ''}
-                  <em>${r.desc}</em><hr>
-                </div>
-              `;
-            }
-          });
-        }
-      });
+    } catch (err) {
+      console.error(err);
+      alert("Error: " + err.message);
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Submit Report";
     }
+  });
 
-    searchInput.addEventListener('input', () => {
-      displayReports(searchInput.value.trim());
+  function displayReports(filter = '') {
+    const reportsRef = ref(db, 'scammerReports');
+    onValue(reportsRef, (snapshot) => {
+      reportList.innerHTML = '';
+      const data = snapshot.val();
+      if (data) {
+        const keys = Object.keys(data).reverse();
+        let found = false;
+        keys.forEach(key => {
+          const r = data[key];
+          if (!filter || r.contact.toLowerCase().includes(filter.toLowerCase())) {
+            found = true;
+            reportList.innerHTML += `
+              <div class="report-item">
+                <strong>${r.name}</strong>
+                <div class="report-meta">
+                  <span>📞 ${r.contact}</span>
+                  <span>🕓 ${r.date}</span>
+                  <span>💬 ${r.type}</span>
+                </div>
+                ${r.image ? `<img src="${r.image}" alt="Evidence" />` : ''}
+                <em>${r.desc}</em>
+              </div>
+            `;
+          }
+        });
+        if (!found) reportList.innerHTML = '<p class="no-reports">No matching reports found.</p>';
+      } else {
+        reportList.innerHTML = '<p class="no-reports">No reports yet.</p>';
+      }
     });
+  }
 
-    displayReports();
-  </script>
+  searchInput.addEventListener('input', () => {
+    displayReports(searchInput.value.trim());
+  });
+
+  displayReports();
+</script>
+
 </body>
 </html>
