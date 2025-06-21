@@ -3,47 +3,148 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Report Scammer</title>
+  <title>Report a Scammer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-color: #007bff;
+      --primary-hover-color: #0056b3;
+      --background-color: #f0f2f5;
+      --card-background: #ffffff;
+      --text-color: #333;
+      --border-color: #ddd;
+      --shadow-light: rgba(0,0,0,0.08);
+      --shadow-medium: rgba(0,0,0,0.15);
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
       padding: 20px;
-      background-color: #f4f4f4;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
     }
+
     h1 {
-      color: #333;
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-size: 2.2em;
+      font-weight: 700;
     }
-    form {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 500px;
-      margin: 0 auto;
+
+    form, .reports, .search {
+      background-color: var(--card-background);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px var(--shadow-light);
+      max-width: 550px;
+      margin: 25px auto;
+      border: 1px solid var(--border-color);
     }
-    input, select, textarea, button {
+
+    /* Adjust margin for the search section to sit nicely below the form */
+    .search {
+      margin-top: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    input, select, textarea {
+      display: block;
+      width: calc(100% - 20px); /* Account for padding */
+      padding: 12px 10px;
+      margin-bottom: 15px; /* More space between fields */
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical; /* Allow vertical resizing */
+      min-height: 100px;
+    }
+
+    button {
       display: block;
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      background-color: #007bff;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: var(--primary-color);
       color: white;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
+      font-size: 1.1em;
+      font-weight: 600;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
+
     button:hover {
-      background-color: #0056b3;
+      background-color: var(--primary-hover-color);
+      transform: translateY(-2px); /* Slight lift on hover */
     }
-    .reports {
-      max-width: 500px;
-      margin: 20px auto;
-      background: #fff;
-      padding: 20px;
+
+    .report-item {
+      padding: 15px 0;
+      border-bottom: 1px dashed var(--border-color); /* Lighter separator */
+    }
+
+    .report-item:last-child {
+      border-bottom: none; /* No border for the last item */
+    }
+
+    .report-item strong {
+      color: var(--primary-color);
+      font-size: 1.1em;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .report-meta {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .report-meta span {
+      margin-right: 15px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto; /* Maintain aspect ratio */
       border-radius: 8px;
+      margin: 15px 0;
+      box-shadow: 0 2px 8px var(--shadow-light);
+      display: block; /* Ensures it takes up full width for better spacing */
+    }
+
+    em {
+      display: block;
+      margin-top: 10px;
+      font-style: normal; /* Override default italic for better readability */
+      color: #555;
+    }
+
+    .no-reports {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+      font-style: italic;
     }
   </style>
 </head>
@@ -51,19 +152,40 @@
   <h1>Report a Scammer</h1>
 
   <form id="reportForm">
-    <input type="text" name="name" placeholder="Scammer Name or Page" required />
-    <input type="text" name="contact" placeholder="Phone Number or Link" required />
-    <select name="type" required>
-      <option value="">-- Scam Type --</option>
+    <label for="scammerName">Scammer Name or Page:</label>
+    <input type="text" id="scammerName" name="name" placeholder="E.g., 'Fake Robux Seller' or 'Scam Page Name'" required />
+
+    <label for="contactInfo">Phone Number or Link:</label>
+    <input type="text" id="contactInfo" name="contact" placeholder="E.g., '+1234567890' or 'facebook.com/scammerpage'" required />
+
+    <label for="imageUrl">Image URL (optional):</label>
+    <input type="url" id="imageUrl" name="image" placeholder="Paste image link here (e.g., screenshot of chat)" />
+
+    <label for="scamType">Scam Type:</label>
+    <select id="scamType" name="type" required>
+      <option value="">-- Select Scam Type --</option>
       <option value="Robux Scam">Robux Scam</option>
       <option value="Product Fraud">Product Fraud</option>
       <option value="WhatsApp Scam">WhatsApp Scam</option>
+      <option value="Investment Scam">Investment Scam</option>
+      <option value="Phishing">Phishing</option>
+      <option value="Other">Other (please describe below)</option>
     </select>
-    <textarea name="desc" placeholder="Describe what happened" required></textarea>
+
+    <label for="description">Describe what happened:</label>
+    <textarea id="description" name="desc" placeholder="Provide details: how, when, what was lost, any unique identifiers..." required></textarea>
+
     <button type="submit">Submit Report</button>
   </form>
 
-  <div class="reports" id="reportList"></div>
+  <div class="search">
+    <label for="searchInput">Search Reports by Phone Number/Link:</label>
+    <input type="text" id="searchInput" placeholder="E.g., '+12345' or 'facebook.com/...' ">
+  </div>
+
+  <div class="reports" id="reportList">
+    <p class="no-reports">No reports yet. Be the first to submit one!</p>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -85,42 +207,78 @@
 
     const form = document.getElementById('reportForm');
     const reportList = document.getElementById('reportList');
+    const searchInput = document.getElementById('searchInput');
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       const report = {
-        name: form.name.value,
-        contact: form.contact.value,
+        name: form.name.value.trim(), // Trim whitespace
+        contact: form.contact.value.trim(),
+        image: form.image.value.trim(),
         type: form.type.value,
-        desc: form.desc.value,
+        desc: form.desc.value.trim(),
         date: new Date().toLocaleString()
       };
-      push(ref(db, 'scammerReports'), report);
-      form.reset();
-      alert("Report submitted successfully!");
+
+      // Basic validation to prevent empty reports if inputs are just spaces
+      if (!report.name || !report.contact || !report.type || !report.desc) {
+          alert("Please fill in all required fields (Name/Page, Phone/Link, Scam Type, Description).");
+          return;
+      }
+
+      push(ref(db, 'scammerReports'), report)
+        .then(() => {
+          alert("Report submitted successfully! Thank you for helping keep others safe.");
+          form.reset();
+        })
+        .catch((error) => {
+          console.error("Error submitting report:", error);
+          alert("There was an error submitting your report. Please try again later.");
+        });
     });
 
-    function displayReports() {
+    function displayReports(filter = '') {
       const reportsRef = ref(db, 'scammerReports');
       onValue(reportsRef, (snapshot) => {
-        reportList.innerHTML = '';
+        reportList.innerHTML = ''; // Clear existing reports
         const data = snapshot.val();
         if (data) {
-          const keys = Object.keys(data).reverse();
+          const keys = Object.keys(data).reverse(); // Display newest reports first
+          let hasFilteredReports = false;
+
           keys.forEach(key => {
             const r = data[key];
-            reportList.innerHTML += `
-              <div>
-                <strong>${r.name}</strong> (${r.type})<br>
-                📍 ${r.contact} 🗓️ ${r.date}<br>
-                <em>${r.desc}</em><hr>
-              </div>
-            `;
+            // Case-insensitive search
+            if (!filter || r.contact.toLowerCase().includes(filter.toLowerCase())) {
+              hasFilteredReports = true;
+              reportList.innerHTML += `
+                <div class="report-item">
+                  <strong>${r.name}</strong>
+                  <div class="report-meta">
+                    <span>📍 ${r.contact}</span>
+                    <span>🗓️ ${r.date}</span>
+                    <span>Type: ${r.type}</span>
+                  </div>
+                  ${r.image ? `<img src="${r.image}" alt="Evidence" onerror="this.style.display='none'" />` : ''}
+                  <em>${r.desc}</em>
+                </div>
+              `;
+            }
           });
+          if (!hasFilteredReports) {
+            reportList.innerHTML = '<p class="no-reports">No reports found matching your search criteria.</p>';
+          }
+        } else {
+          reportList.innerHTML = '<p class="no-reports">No reports submitted yet. Be the first to submit one!</p>';
         }
       });
     }
 
+    searchInput.addEventListener('input', () => {
+      displayReports(searchInput.value.trim());
+    });
+
+    // Initial display of reports when the page loads
     displayReports();
   </script>
 </body>
